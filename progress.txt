@@ -1,0 +1,30 @@
+PROGRESS - #### Pasos para implementar buscador de dinosaurios (nombre + ciudad) ####
+
+REQUERIMIENTOS:
+
+1. Crear controlador con acción index/2 para filtrar por name y city
+2. Crear vista JSON en dinosaur_view.ex
+3. Definir ruta GET en router.ex
+4. Implementar consultas Ecto con filtros combinados (name y city)
+5. Probar endpoints con filtros en navegador o Postman
+
+ESTADO:
+✅ LISTOS:
+
+- Archivo progress.txt creado
+
+🚧 EN PROGRESO:
+
+- Ninguno
+
+⏳ PENDIENTES:
+
+- Crear controlador con index/2
+- Crear vista JSON
+- Definir ruta GET
+- Consultas Ecto combinadas
+- Pruebas en navegador/Postman
+
+IMPLEMENTACIÓN COMPLETA:
+
+- Ninguno
