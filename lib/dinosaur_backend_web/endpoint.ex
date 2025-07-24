@@ -49,5 +49,6 @@ defmodule DinosaurBackendWeb.Endpoint do
   plug Plug.MethodOverride
   plug Plug.Head
   plug Plug.Session, @session_options
+  plug OpenApiSpex.Plug.PutApiSpec, module: DinosaurBackendWeb.ApiSpec, render_error: DinosaurBackendWeb.ErrorJSON
   plug DinosaurBackendWeb.Router
 end

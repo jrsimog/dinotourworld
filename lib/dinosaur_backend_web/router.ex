@@ -21,9 +21,35 @@ defmodule DinosaurBackendWeb.Router do
   end
 
   # Other scopes may use custom stacks.
-  # scope "/api", DinosaurBackendWeb do
-  #   pipe_through :api
-  # end
+  scope "/api", DinosaurBackendWeb.Api do
+    pipe_through :api
+
+    get "/dinosaurs", DinosaurController, :index
+  end
+
+  scope "/api" do
+    pipe_through :api
+
+    forward "/graphql", Absinthe.Plug,
+      schema: DinosaurBackendWeb.Schema
+
+    if Mix.env() == :dev do
+      forward "/graphiql", Absinthe.Plug.GraphiQL,
+        schema: DinosaurBackendWeb.Schema,
+        interface: :simple
+    end
+  end
+
+  # OpenAPI Documentation routes
+  scope "/api" do
+    pipe_through :api
+    get "/openapi", OpenApiSpex.Plug.RenderSpec, []
+  end
+
+  scope "/api" do
+    pipe_through :browser
+    get "/doc", OpenApiSpex.Plug.SwaggerUI, path: "/api/openapi"
+  end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
   if Application.compile_env(:dinosaur_backend, :dev_routes) do
