@@ -83,3 +83,10 @@ config :phoenix_live_view,
 
 # Disable swoosh api client as it is only required for production adapters.
 config :swoosh, :api_client, false
+
+# API Authentication tokens for development
+config :dinosaur_backend, :api_tokens, [
+  "dev_token_12345",
+  "android_app_token_67890",
+  "web_client_token_abcdef"
+]

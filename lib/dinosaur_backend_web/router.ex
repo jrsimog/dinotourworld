@@ -14,26 +14,36 @@ defmodule DinosaurBackendWeb.Router do
     plug :accepts, ["json"]
   end
 
+  pipeline :api_authenticated do
+    plug :accepts, ["json"]
+    plug DinosaurBackendWeb.Plugs.BearerAuth
+  end
+
   scope "/", DinosaurBackendWeb do
     pipe_through :browser
 
     get "/", PageController, :home
   end
 
-  # Other scopes may use custom stacks.
+  # Authenticated API routes
   scope "/api", DinosaurBackendWeb.Api do
-    pipe_through :api
+    pipe_through :api_authenticated
 
     get "/dinosaurs", DinosaurController, :index
   end
 
   scope "/api" do
-    pipe_through :api
+    pipe_through :api_authenticated
 
     forward "/graphql", Absinthe.Plug,
       schema: DinosaurBackendWeb.Schema
+  end
 
-    if Mix.env() == :dev do
+  # Development-only routes (no authentication required)
+  if Mix.env() == :dev do
+    scope "/api" do
+      pipe_through :api
+
       forward "/graphiql", Absinthe.Plug.GraphiQL,
         schema: DinosaurBackendWeb.Schema,
         interface: :simple

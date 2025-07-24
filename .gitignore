@@ -34,4 +34,6 @@ dinosaur_backend-*.tar
 # In case you use Node.js/npm, you want to ignore these.
 npm-debug.log
 /assets/node_modules/
-
+progress.txt
+GEMINI.md
+CLAUDE.md

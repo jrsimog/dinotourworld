@@ -237,4 +237,66 @@ defmodule DinosaurBackendWeb.Schemas do
       }
     })
   end
+
+  defmodule UnauthorizedErrorResponse do
+    @moduledoc "Schema for unauthorized error response (401)"
+    require OpenApiSpex
+
+    OpenApiSpex.schema(%{
+      title: "UnauthorizedErrorResponse",
+      description: "Respuesta cuando el token de autenticación es inválido o falta",
+      type: :object,
+      properties: %{
+        error: %Schema{
+          type: :object,
+          properties: %{
+            code: %Schema{type: :string, description: "Código del error", example: "UNAUTHORIZED"},
+            message: %Schema{type: :string, description: "Mensaje del error"},
+            timestamp: %Schema{type: :string, format: :"date-time", description: "Timestamp cuando ocurrió el error"},
+            request_id: %Schema{type: :string, description: "ID único de la petición para rastreo"}
+          },
+          required: [:code, :message, :timestamp]
+        }
+      },
+      required: [:error],
+      examples: %{
+        "missing_token" => %{
+          summary: "Token faltante",
+          description: "Ejemplo cuando no se proporciona token de autorización",
+          value: %{
+            "error" => %{
+              "code" => "UNAUTHORIZED",
+              "message" => "Missing authorization header",
+              "timestamp" => "2024-01-15T10:30:00Z",
+              "request_id" => "req_abc123"
+            }
+          }
+        },
+        "invalid_token" => %{
+          summary: "Token inválido",
+          description: "Ejemplo cuando el token proporcionado no es válido",
+          value: %{
+            "error" => %{
+              "code" => "UNAUTHORIZED", 
+              "message" => "Invalid or expired token",
+              "timestamp" => "2024-01-15T10:30:00Z",
+              "request_id" => "req_xyz789"
+            }
+          }
+        },
+        "invalid_format" => %{
+          summary: "Formato incorrecto",
+          description: "Ejemplo cuando el header de autorización tiene formato incorrecto",
+          value: %{
+            "error" => %{
+              "code" => "UNAUTHORIZED",
+              "message" => "Invalid authorization header format. Expected 'Bearer <token>'",
+              "timestamp" => "2024-01-15T10:30:00Z",
+              "request_id" => "req_def456"
+            }
+          }
+        }
+      }
+    })
+  end
 end

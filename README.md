@@ -6,8 +6,9 @@ A comprehensive Phoenix-based API for managing and searching dinosaur data with 
 
 - **Dual API Architecture**: Complete REST and GraphQL APIs
 - **Advanced Search**: Filter dinosaurs by name and discovery location
-- **Comprehensive Testing**: 59 tests with 100% coverage on core modules
+- **Comprehensive Testing**: 76 tests with 100% coverage on core modules
 - **OpenAPI Documentation**: Interactive Swagger UI with detailed schemas
+- **Bearer Token Authentication**: Secure API access with configurable tokens
 - **Robust Validation**: Parameter validation with detailed error responses
 - **Developer Tools**: GraphiQL interface and comprehensive documentation
 - **Production Ready**: Error handling, request tracking, and metadata responses
@@ -36,6 +37,74 @@ mix phx.server
 - **GraphiQL Interface**: [http://localhost:4000/api/graphiql](http://localhost:4000/api/graphiql)
 - **OpenAPI Spec**: [http://localhost:4000/api/openapi](http://localhost:4000/api/openapi)
 
+## 🔐 Authentication
+
+All API endpoints (both REST and GraphQL) require Bearer token authentication. Include your token in the `Authorization` header:
+
+```bash
+Authorization: Bearer your_token_here
+```
+
+### Available Tokens by Environment
+
+#### Development
+- `dev_token_12345`
+
+#### Test
+- `test_token_67890`
+
+#### Production
+Configure via `API_TOKENS` environment variable:
+```bash
+export API_TOKENS="prod_token_1,prod_token_2,prod_token_3"
+```
+
+### Authentication Examples
+
+#### Successful Request
+```bash
+curl -X GET "http://localhost:4000/api/dinosaurs" \
+  -H "Authorization: Bearer dev_token_12345" \
+  -H "Accept: application/json"
+```
+
+#### Missing Token (401 Error)
+```bash
+curl -X GET "http://localhost:4000/api/dinosaurs" \
+  -H "Accept: application/json"
+```
+
+**Response:**
+```json
+{
+  "error": {
+    "code": "UNAUTHORIZED",
+    "message": "Missing authorization header",
+    "timestamp": "2024-01-15T10:30:00Z",
+    "request_id": "req_abc123"
+  }
+}
+```
+
+#### Invalid Token (401 Error)
+```bash
+curl -X GET "http://localhost:4000/api/dinosaurs" \
+  -H "Authorization: Bearer invalid_token" \
+  -H "Accept: application/json"
+```
+
+**Response:**
+```json
+{
+  "error": {
+    "code": "UNAUTHORIZED", 
+    "message": "Invalid or expired token",
+    "timestamp": "2024-01-15T10:30:00Z",
+    "request_id": "req_xyz789"
+  }
+}
+```
+
 ## 📡 API Endpoints
 
 ### REST API
@@ -43,6 +112,7 @@ mix phx.server
 #### Get All Dinosaurs
 ```bash
 curl -X GET "http://localhost:4000/api/dinosaurs" \
+  -H "Authorization: Bearer dev_token_12345" \
   -H "Accept: application/json"
 ```
 
@@ -73,24 +143,28 @@ curl -X GET "http://localhost:4000/api/dinosaurs" \
 #### Search by Dinosaur Name
 ```bash
 curl -X GET "http://localhost:4000/api/dinosaurs?name=rex" \
+  -H "Authorization: Bearer dev_token_12345" \
   -H "Accept: application/json"
 ```
 
 #### Search by Discovery City
 ```bash
 curl -X GET "http://localhost:4000/api/dinosaurs?city=gobi" \
+  -H "Authorization: Bearer dev_token_12345" \
   -H "Accept: application/json"
 ```
 
 #### Combined Search (Name + City)
 ```bash
 curl -X GET "http://localhost:4000/api/dinosaurs?name=tyrannosaurus&city=hell creek" \
+  -H "Authorization: Bearer dev_token_12345" \
   -H "Accept: application/json"
 ```
 
 #### Validation Error Example
 ```bash
 curl -X GET "http://localhost:4000/api/dinosaurs?name=a" \
+  -H "Authorization: Bearer dev_token_12345" \
   -H "Accept: application/json"
 ```
 
@@ -116,6 +190,7 @@ curl -X GET "http://localhost:4000/api/dinosaurs?name=a" \
 #### Basic Query
 ```bash
 curl -X POST "http://localhost:4000/api/graphql" \
+  -H "Authorization: Bearer dev_token_12345" \
   -H "Content-Type: application/json" \
   -H "Accept: application/json" \
   -d '{
@@ -126,6 +201,7 @@ curl -X POST "http://localhost:4000/api/graphql" \
 #### Query with Filters
 ```bash
 curl -X POST "http://localhost:4000/api/graphql" \
+  -H "Authorization: Bearer dev_token_12345" \
   -H "Content-Type: application/json" \
   -H "Accept: application/json" \
   -d '{
@@ -140,6 +216,7 @@ curl -X POST "http://localhost:4000/api/graphql" \
 #### Query with Locations
 ```bash
 curl -X POST "http://localhost:4000/api/graphql" \
+  -H "Authorization: Bearer dev_token_12345" \
   -H "Content-Type: application/json" \
   -H "Accept: application/json" \
   -d '{
@@ -150,6 +227,7 @@ curl -X POST "http://localhost:4000/api/graphql" \
 #### Single Dinosaur Query
 ```bash
 curl -X POST "http://localhost:4000/api/graphql" \
+  -H "Authorization: Bearer dev_token_12345" \
   -H "Content-Type: application/json" \
   -H "Accept: application/json" \
   -d '{
@@ -187,12 +265,17 @@ mix test --cover
 
 # Run specific test files
 mix test test/dinosaur_backend_web/controllers/api/dinosaur_controller_test.exs
+
+# Run authentication tests
+mix test test/dinosaur_backend_web/plugs/bearer_auth_test.exs
+mix test test/dinosaur_backend_web/controllers/api/dinosaur_controller_auth_test.exs
 ```
 
 **Test Coverage:**
 - Context layer (CRUD operations)
 - REST API endpoints (all filters and edge cases)
 - GraphQL resolvers and schema
+- Bearer token authentication system
 - OpenAPI documentation generation
 - Validation and error handling
 
@@ -221,6 +304,7 @@ mix test test/dinosaur_backend_web/controllers/api/dinosaur_controller_test.exs
 - `DATABASE_URL`: PostgreSQL connection string
 - `SECRET_KEY_BASE`: Phoenix secret key
 - `PHX_HOST`: Host configuration for production
+- `API_TOKENS`: Comma-separated list of valid API tokens (production only)
 
 ### Development Setup
 1. Copy `.env.example` to `.env` (if available)

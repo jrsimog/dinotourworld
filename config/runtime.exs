@@ -114,4 +114,23 @@ if config_env() == :prod do
   #     config :swoosh, :api_client, Swoosh.ApiClient.Hackney
   #
   # See https://hexdocs.pm/swoosh/Swoosh.html#module-installation for details.
+
+  # API Authentication tokens for production
+  # Expected format: "token1,token2,token3"
+  api_tokens_string = System.get_env("API_TOKENS") || ""
+  
+  api_tokens = 
+    if api_tokens_string != "" do
+      String.split(api_tokens_string, ",") |> Enum.map(&String.trim/1)
+    else
+      []
+    end
+
+  config :dinosaur_backend, :api_tokens, api_tokens
+end
+
+# API Authentication tokens for all environments (fallback)
+if config_env() != :prod do
+  tokens = Application.get_env(:dinosaur_backend, :api_tokens, [])
+  config :dinosaur_backend, :api_tokens, tokens
 end

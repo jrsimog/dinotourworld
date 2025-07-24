@@ -33,8 +33,10 @@ defmodule DinosaurBackendWeb.Api.DinosaurController do
     responses: [
       ok: {"Lista de dinosaurios encontrados", "application/json", Schemas.DinosaursResponse},
       bad_request: {"Parámetros inválidos", "application/json", Schemas.ValidationErrorResponse},
+      unauthorized: {"Token de autenticación inválido o faltante", "application/json", Schemas.UnauthorizedErrorResponse},
       internal_server_error: {"Error interno del servidor", "application/json", Schemas.ServerErrorResponse}
-    ]
+    ],
+    security: [%{"BearerAuth" => []}]
 
   def index(conn, params) do
     case validate_params(params) do

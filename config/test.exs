@@ -35,3 +35,9 @@ config :phoenix, :plug_init_mode, :runtime
 # Enable helpful, but potentially expensive runtime checks
 config :phoenix_live_view,
   enable_expensive_runtime_checks: true
+
+# API Authentication tokens for testing
+config :dinosaur_backend, :api_tokens, [
+  "dev_token_12345",
+  "test_token_67890"
+]
