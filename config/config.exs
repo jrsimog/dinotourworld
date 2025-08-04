@@ -61,6 +61,15 @@ config :logger, :console,
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
+# Configure OpenStreetMap client
+config :dinosaur_backend, :openstreetmap,
+  client: DinosaurBackend.OpenStreetMap.Client,
+  base_url: "https://nominatim.openstreetmap.org",
+  user_agent: "DinosaurBackend/1.0 (Elixir Phoenix Application)",
+  default_limit: 5,
+  timeout: 10_000,
+  rate_limit_delay: 1000
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"

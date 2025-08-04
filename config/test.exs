@@ -41,3 +41,7 @@ config :dinosaur_backend, :api_tokens, [
   "dev_token_12345",
   "test_token_67890"
 ]
+
+# Configure OpenStreetMap to use mock in tests
+config :dinosaur_backend, :openstreetmap,
+  client: DinosaurBackend.Mocks.OpenStreetMapMock
